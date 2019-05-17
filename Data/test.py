@@ -9,7 +9,6 @@ outputname = "output.txt"
 answer = 'answer.txt'
 for i in file_list:
 		fn = "code/"+i
-		print fn
 		with open(fn, "r") as file:
 			content = file.read()
 		content = re.sub(r'system *\( *"pause" *\) *;', '', content)
@@ -18,9 +17,22 @@ for i in file_list:
 		content = re.sub(r'fprint_s','fprint',content)
 		with open(fn, "w") as file:
 			file.write(content)
-		subprocess.call(["gcc",fn])
+		val=subprocess.call(["gcc",fn])
 		fo = open(outputname,'w')
-		subprocess.call(["./a.out"],stdout=fo)
+		file_list2 = os.listdir('.')
+		file_list2.sort()
+		flag = 0;
+		for j in file_list2:
+				if j == "a.out":
+						flag =1;
+						break;
+		if flag == 0:
+				print i+"compile error"
+				continue
+		val =subprocess.call(["./a.out"],stdout=fo)
+		if val == -11:
+				print "segmentatin fault"+i
+				continue;
 		with open(outputname,"r") as file:
 			content = file.read()
 		content = content.replace(' ','')
@@ -33,4 +45,5 @@ for i in file_list:
 				print i+"Correct"
 		else:
 				print i+"Wrong"
+		subprocess.call(["rm","a.out"])
 
